@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PORSCHE QUICK MATH – พอร์ชคิดไว</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500;600&family=Sarabun:wght@400;600;700&display=swap">
+<style>
+/* VOICE: cheerful game-show for kids, but tidy and clear like a good classroom tool
+   IDEA: the competition board — big coloured number tiles and a scoreboard target card
+   PICTURE: the tiles themselves; home hero is a stack of tiles spelling the game
+   COLOUR and TYPE: navy housing, sky ground, tiles in sky/green/yellow/orange/white; Mitr display + Sarabun body
+   LAYOUT: board left, target + clock right; stacks to target, tiles, builder, keypad on phones */
+:root{color-scheme:light dark;
+--bg:light-dark(#dff2ff,#0b1736);--card:light-dark(#ffffff,#142552);--ink:light-dark(#0f1f4b,#eef4ff);--mute:light-dark(#4c5d86,#a9b8dd);
+--navy:#13285e;--navy2:light-dark(#13285e,#0a1532);--sky:#38b6f2;--green:#2fbf5b;--yellow:#ffc93c;--orange:#ff8a3d;--red:#ef5350;
+--line:light-dark(#c9def2,#27407a);--soft:light-dark(#eef7ff,#1b2f63);--shadow:0 6px 0 light-dark(#b9d3ea,#060f27)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 Sarabun,"Noto Sans Thai",Tahoma,sans-serif;overflow-x:clip;min-height:100vh;
+ background-image:radial-gradient(circle at 12% 18%,light-dark(#ffffff88,#ffffff08) 0 90px,transparent 91px),radial-gradient(circle at 88% 70%,light-dark(#ffffff66,#ffffff06) 0 140px,transparent 141px)}
+h1,h2,h3,.disp{font-family:Mitr,Sarabun,sans-serif;font-weight:500;line-height:1.15;margin:0;text-wrap:balance}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;border-radius:16px;min-height:44px;padding:0 16px;font-family:Mitr,Sarabun,sans-serif;font-weight:500;transition:transform .08s,box-shadow .08s,filter .15s}
+button:active:not(:disabled){transform:translateY(3px)}
+button:disabled{opacity:.4;cursor:not-allowed}
+:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+.topbar{background:var(--navy2);color:#fff;display:flex;align-items:center;gap:12px;padding:10px max(4vw,14px);position:sticky;top:0;z-index:20}
+.brand{display:flex;align-items:center;gap:10px;background:none;color:#fff;padding:0;font-size:18px}
+.brand svg{width:38px;height:38px}
+.topbar .sp{flex:1}
+.iconbtn{background:#ffffff1f;color:#fff;width:44px;padding:0;display:grid;place-items:center}
+.iconbtn svg{width:22px;height:22px}
+.view{display:none;padding:clamp(16px,3vw,36px) max(4vw,14px) 48px;max-width:1240px;margin:0 auto}
+.view.on{display:block;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}}
+.card{background:var(--card);border-radius:24px;padding:clamp(16px,2.4vw,26px);box-shadow:var(--shadow)}
+.btn{background:var(--soft);color:var(--ink);box-shadow:0 4px 0 var(--line)}
+.btn.pri{background:var(--green);color:#fff;box-shadow:0 4px 0 #1d8a40}
+.btn.sky{background:var(--sky);color:#fff;box-shadow:0 4px 0 #1f86bd}
+.btn.org{background:var(--orange);color:#fff;box-shadow:0 4px 0 #c9621f}
+.btn.yel{background:var(--yellow);color:#3b2a00;box-shadow:0 4px 0 #c99a17}
+.btn.nav{background:var(--navy);color:#fff;box-shadow:0 4px 0 #07122e}
+.btn.red{background:var(--red);color:#fff;box-shadow:0 4px 0 #b23431}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.muted{color:var(--mute)}
+.small{font-size:14px}
+
+/* ---------- home ---------- */
+.hero{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:clamp(18px,3vw,40px);align-items:center}
+.logoTiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(6px,1.2vw,12px);max-width:520px}
+.lt{aspect-ratio:1;border-radius:18px;display:grid;place-items:center;font:600 clamp(30px,6vw,64px)/1 Mitr,sans-serif;color:var(--navy);box-shadow:0 7px 0 #0002;animation:bob 3.2s ease-in-out infinite}
+.lt:nth-child(2n){animation-delay:.4s}.lt:nth-child(3n){animation-delay:.9s}
+@keyframes bob{50%{transform:translateY(-6px)}}
+.hero h1{font-size:clamp(34px,5.4vw,58px);font-weight:600;letter-spacing:.5px;color:var(--ink)}
+.hero h1 span{display:block;color:var(--sky);font-size:.62em;margin-top:6px}
+.owner{display:inline-flex;gap:8px;align-items:center;background:var(--yellow);color:#3b2a00;border-radius:999px;padding:6px 16px;font-family:Mitr;margin:14px 0 4px}
+.menu{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:22px}
+.menu button{min-height:84px;font-size:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:10px}
+.menu button svg{width:28px;height:28px}
+.menu .big{grid-column:span 3;min-height:72px;font-size:22px;flex-direction:row;gap:10px}
+.strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:22px}
+.stat{background:var(--card);border-radius:18px;padding:12px 14px;box-shadow:var(--shadow)}
+.stat b{display:block;font:600 clamp(22px,3vw,30px)/1.1 Mitr;font-variant-numeric:tabular-nums}
+.stat span{font-size:14px;color:var(--mute)}
+.credit{margin-top:28px;text-align:center;color:var(--mute);font-size:14px}
+.credit b{font-family:Mitr;color:var(--ink);font-size:16px;letter-spacing:1px}
+
+/* ---------- play ---------- */
+.hud{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px}
+.chip{background:var(--card);border-radius:999px;padding:6px 14px;font-family:Mitr;box-shadow:0 3px 0 var(--line);white-space:nowrap}
+.chip.lv{background:var(--navy);color:#fff;box-shadow:none}
+.hud .sp{flex:1}
+.clock{background:var(--navy);color:#7ef0a0;font:600 26px/1 Mitr;font-variant-numeric:tabular-nums;border-radius:14px;padding:9px 16px;letter-spacing:2px;min-width:120px;text-align:center}
+.clock.warn{color:#ffb4a8;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:.55}}
+.score{font:600 22px/1 Mitr;background:var(--yellow);color:#3b2a00;border-radius:14px;padding:10px 16px;white-space:nowrap}
+.play{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:18px;align-items:start}
+.side{display:grid;gap:14px}
+.target{background:var(--navy);color:#fff;border-radius:24px;padding:18px;text-align:center;box-shadow:0 6px 0 #07122e}
+.target small{font-family:Mitr;color:#bfe6ff;font-size:16px}
+.target .num{font:600 clamp(64px,9vw,104px)/1 Mitr;background:var(--yellow);color:var(--navy);border-radius:18px;margin-top:10px;padding:14px 0;letter-spacing:4px}
+.tiles{display:grid;gap:clamp(8px,1.4vw,14px);position:relative}
+.tile{aspect-ratio:1;border-radius:20px;font:600 clamp(40px,8vw,80px)/1 Mitr;color:var(--navy);box-shadow:0 7px 0 #0003;position:relative;padding:0}
+.tile:hover:not(:disabled){filter:brightness(1.05)}
+.tile.used{opacity:.35;transform:scale(.93);box-shadow:0 2px 0 #0002}
+.tile .cnt{position:absolute;top:6px;right:8px;font-size:14px;background:var(--navy);color:#fff;border-radius:999px;padding:1px 8px;display:none}
+.tile.used .cnt,.tile.multi .cnt{display:block}
+.c0{background:var(--sky)}.c1{background:#7ddc8f}.c2{background:var(--yellow)}.c3{background:#ffad72}.c4{background:#fff;outline:4px solid var(--sky);outline-offset:-4px}
+.veil{position:absolute;inset:-4px;background:var(--navy);border-radius:22px;display:none;place-items:center;color:#fff;text-align:center;font-family:Mitr;font-size:20px;z-index:2;padding:10px}
+.veil.on{display:grid}
+.builder{margin-top:18px}
+.eq{min-height:78px;background:var(--soft);border:3px dashed var(--line);border-radius:18px;padding:12px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.eq.err{border-color:var(--red)}
+.eq .tk{font:600 26px/1 Mitr;border-radius:10px;padding:8px 11px;color:var(--navy)}
+.eq .op{background:none;color:var(--ink);padding:8px 3px}
+.eq .ph{color:var(--mute)}
+.caret{width:3px;height:32px;background:var(--orange);border-radius:2px;animation:blink 1s steps(2) infinite}
+.live{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:10px 2px 0;font-family:Mitr}
+.live .val{font-size:24px;font-weight:600}
+.live .msg.err{color:var(--red)}.live .msg.part{color:var(--mute)}.live .msg.ok{color:var(--green)}
+.keys{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-top:14px}
+.keys button{min-height:58px;font-size:26px}
+.keys .wide2{grid-column:span 2;font-size:18px}
+.keys .check{grid-column:span 5;font-size:22px;min-height:62px}
+.panel{margin-top:16px}
+.panel h3{font-size:18px;margin-bottom:8px}
+ol.steps{margin:0;padding-left:0;list-style:none;display:grid;gap:6px;counter-reset:s}
+ol.steps li{counter-increment:s;background:var(--soft);border-radius:12px;padding:8px 12px;font-family:Mitr}
+ol.steps li::before{content:"ขั้นที่ " counter(s) ": ";color:var(--sky);font-weight:600}
+textarea{width:100%;min-height:88px;border-radius:14px;border:2px solid var(--line);background:var(--soft);padding:10px 12px;resize:vertical;font-size:16px}
+.feedback{border-radius:18px;padding:14px 16px;font-family:Mitr;font-size:18px;display:none;margin-top:14px}
+.feedback.on{display:block;animation:pop .3s ease}
+.feedback.good{background:#d9f7e2;color:#11612c}.feedback.bad{background:#ffe3dc;color:#962a12}
+@keyframes pop{0%{transform:scale(.94)}60%{transform:scale(1.02)}}
+.ctrl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.ctrl button{font-size:15px;padding:0 8px}
+.ctrl .full{grid-column:span 2}
+.sol{background:var(--soft);border-radius:16px;padding:12px 14px;margin-top:10px}
+.sol .ex{font:600 22px/1.3 Mitr;margin-bottom:6px;overflow-wrap:anywhere}
+.sol p{margin:8px 0 0;font-size:15px;color:var(--mute)}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* ---------- effects / toast / modal ---------- */
+.fx{position:fixed;pointer-events:none;z-index:60;width:26px;height:26px;animation:burst .9s ease-out forwards}
+@keyframes burst{to{transform:translate(var(--dx),var(--dy)) rotate(200deg) scale(.4);opacity:0}}
+.plus{position:fixed;z-index:61;pointer-events:none;font:600 30px Mitr;color:var(--orange);text-shadow:0 2px 0 #fff;animation:rise 1.2s ease-out forwards}
+@keyframes rise{to{transform:translateY(-70px);opacity:0}}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--navy);color:#fff;border-radius:14px;padding:12px 18px;font-family:Mitr;z-index:70;max-width:min(92vw,520px);text-align:center;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+.modal{position:fixed;inset:0;background:#0a1532aa;display:none;place-items:center;z-index:50;padding:14px}
+.modal.on{display:grid}
+.modal .card{width:min(640px,100%);max-height:92vh;overflow:auto}
+.seg{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 14px}
+.seg button{background:var(--soft);box-shadow:0 3px 0 var(--line);flex:1 1 120px}
+.seg button.on{background:var(--sky);color:#fff;box-shadow:0 3px 0 #1f86bd}
+label.lab{font-family:Mitr;display:block;margin-top:4px}
+input[type=number],input[type=text],select{min-height:44px;border-radius:12px;border:2px solid var(--line);background:var(--soft);padding:0 12px;font-size:16px}
+.check-row{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line)}
+.check-row input{width:22px;height:22px;margin-top:3px;accent-color:var(--green)}
+
+/* ---------- stats / summary ---------- */
+.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line)}
+th{font-family:Mitr;font-weight:500;color:var(--mute);font-size:14px}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.medals{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.medal{background:var(--soft);border-radius:18px;padding:12px;text-align:center;opacity:.45}
+.medal.got{opacity:1;background:var(--card);box-shadow:var(--shadow)}
+.medal svg{width:52px;height:52px}
+.medal b{display:block;font-family:Mitr;font-weight:500}
+.medal span{font-size:13px;color:var(--mute)}
+details.pb{background:var(--card);border-radius:18px;padding:12px 16px;margin-top:10px;box-shadow:0 3px 0 var(--line)}
+details.pb summary{cursor:pointer;font-family:Mitr;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.tag{border-radius:999px;padding:2px 10px;font-size:14px;color:#fff}
+.tag.ok{background:var(--green)}.tag.no{background:var(--red)}.tag.sk{background:var(--mute)}
+.stars{color:var(--yellow);letter-spacing:2px}
+.scroll{overflow-x:auto}
+.howto h3{margin-top:18px}
+.howto li{margin:4px 0}
+section h2{font-size:clamp(26px,3.4vw,36px);margin-bottom:14px}
+
+@media(max-width:900px){.play{grid-template-columns:minmax(0,1fr)}.side{display:contents}.side .target{order:-1;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px}.side>.card{order:1}.target .num{font-size:clamp(44px,12vw,72px);padding:6px 18px;margin:0}}
+@media(max-width:700px){.hero{grid-template-columns:minmax(0,1fr)}.logoTiles{max-width:360px}.menu{grid-template-columns:repeat(2,minmax(0,1fr))}.menu .big{grid-column:span 2}.strip,.grid4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.keys button{min-height:52px;font-size:22px}.tile{border-radius:14px}.brand span{display:none}.clock{font-size:22px;min-width:100px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+ <symbol id="i-star" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7L12 17.3 5.8 20.9l1.6-7L2 9.2l7.1-.6z"/></symbol>
+ <symbol id="i-play" viewBox="0 0 24 24"><path fill="currentColor" d="M7 4.5v15a1 1 0 0 0 1.5.9l12-7.5a1 1 0 0 0 0-1.8l-12-7.5A1 1 0 0 0 7 4.5z"/></symbol>
+ <symbol id="i-book" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zm0 0v16M8 7h7"/></symbol>
+ <symbol id="i-clock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/></g></symbol>
+ <symbol id="i-chart" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M4 20h16M7 16v-5M12 16V6M17 16v-8"/></symbol>
+ <symbol id="i-help" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .9-1 1.7M12 17h.01"/></g></symbol>
+ <symbol id="i-gear" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></g></symbol>
+ <symbol id="i-sound" viewBox="0 0 24 24"><path fill="currentColor" d="M3 9h4l5-4v14l-5-4H3z"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12"/></symbol>
+ <symbol id="i-mute" viewBox="0 0 24 24"><path fill="currentColor" d="M3 9h4l5-4v14l-5-4H3z"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M16 9l5 6M21 9l-5 6"/></symbol>
+ <symbol id="i-home" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></symbol>
+ <symbol id="i-medal" viewBox="0 0 48 48"><path d="M14 2h8l4 14h-8zM34 2h-8l-4 14h8z" fill="#38b6f2"/><circle cx="24" cy="30" r="14" fill="#ffc93c"/><circle cx="24" cy="30" r="10" fill="#ffad3a"/><path fill="#fff" d="M24 22.5l2.2 4.6 5 .5-3.8 3.4 1.1 5-4.5-2.6-4.5 2.6 1.1-5-3.8-3.4 5-.5z"/></symbol>
+ <symbol id="logo" viewBox="0 0 48 48"><rect x="2" y="2" width="20" height="20" rx="5" fill="#38b6f2"/><rect x="26" y="2" width="20" height="20" rx="5" fill="#ffc93c"/><rect x="2" y="26" width="20" height="20" rx="5" fill="#2fbf5b"/><rect x="26" y="26" width="20" height="20" rx="5" fill="#ff8a3d"/><path d="M8 12h8M12 8v8M30 12h12M8 33l8 8M16 33l-8 8M30 34h12M30 38h12" stroke="#13285e" stroke-width="3" stroke-linecap="round"/></symbol>
+</svg>
+
+<header class="topbar">
+ <button class="brand" id="goHome" aria-label="หน้าหลัก"><svg><use href="#logo"/></svg><span class="disp">PORSCHE QUICK MATH</span></button>
+ <div class="sp"></div>
+ <button class="iconbtn" id="homeBtn" title="หน้าหลัก" aria-label="หน้าหลัก"><svg><use href="#i-home"/></svg></button>
+ <button class="iconbtn" id="muteBtn" title="เปิด/ปิดเสียง" aria-label="เปิด/ปิดเสียง"><svg><use id="muteIcon" href="#i-sound"/></svg></button>
+</header>
+
+<!-- ================= HOME ================= -->
+<section class="view on" id="v-home">
+ <div class="hero">
+  <div>
+   <h1>PORSCHE QUICK MATH<span>พอร์ชคิดไว</span></h1>
+   <div class="owner"><svg width="18" height="18"><use href="#i-star"/></svg>โปรแกรมของน้องพอร์ช</div>
+   <p class="muted">เกมฝึกคิดเลขเร็ว ใช้ตัวเลขที่ได้รับกับเครื่องหมาย + − × ÷ ^ สร้างสมการให้ได้คำตอบเป้าหมาย ทุกโจทย์มีวิธีคิดได้จริง</p>
+   <div class="menu">
+    <button class="btn pri big" data-act="start"><svg><use href="#i-play"/></svg>เริ่มเกม</button>
+    <button class="btn sky" data-act="practice"><svg><use href="#i-book"/></svg>ฝึกซ้อม</button>
+    <button class="btn org" data-act="comp"><svg><use href="#i-clock"/></svg>แข่งขันจับเวลา</button>
+    <button class="btn yel" data-act="stats"><svg><use href="#i-chart"/></svg>ดูสถิติ</button>
+    <button class="btn" data-act="howto"><svg><use href="#i-help"/></svg>วิธีเล่น</button>
+    <button class="btn" data-act="settings"><svg><use href="#i-gear"/></svg>ตั้งค่า</button>
+    <button class="btn" data-act="about"><svg><use href="#i-star"/></svg>เกี่ยวกับ</button>
+   </div>
+  </div>
+  <div class="logoTiles" aria-hidden="true">
+   <div class="lt c0">P</div><div class="lt c1">Q</div><div class="lt c2">M</div><div class="lt c3">+</div>
+   <div class="lt c2">×</div><div class="lt c4">8</div><div class="lt c0">÷</div><div class="lt c1">5</div>
+   <div class="lt c3">3</div><div class="lt c0">^</div><div class="lt c1">2</div><div class="lt c2">=</div>
+  </div>
+ </div>
+ <div class="strip" id="homeStrip"></div>
+ <div class="credit">PORSCHE QUICK MATH<br>Created &amp; Owned by<br><b>NONG PORSCHE</b><br>พัฒนาเพื่อส่งเสริมทักษะทางคณิตศาสตร์และการคิดวิเคราะห์สำหรับเด็ก</div>
+</section>
+
+<!-- ================= PLAY ================= -->
+<section class="view" id="v-play">
+ <div class="hud">
+  <span class="chip lv" id="hLevel">ระดับที่ 1</span>
+  <span class="chip" id="hCount">ใช้ตัวเลข 4 ตัว</span>
+  <span class="chip" id="hDiff">EASY</span>
+  <span class="chip" id="hProb">ข้อที่ 1</span>
+  <div class="sp"></div>
+  <div class="clock" id="clock" aria-live="off">00:00</div>
+  <div class="score" id="hScore">0 คะแนน</div>
+ </div>
+ <div class="play">
+  <div>
+   <div class="card">
+    <div class="tiles" id="tiles"></div>
+    <div class="builder">
+     <div class="eq" id="eq" aria-live="polite"></div>
+     <div class="live"><span class="msg" id="liveMsg"></span><span class="val" id="liveVal"></span></div>
+     <div class="keys" id="keys">
+      <button class="btn nav" data-op="+">+</button><button class="btn nav" data-op="-">−</button><button class="btn nav" data-op="×">×</button><button class="btn nav" data-op="÷">÷</button><button class="btn nav" data-op="^" id="powKey">^</button>
+      <button class="btn sky" data-paren="(">(</button><button class="btn sky" data-paren=")">)</button><button class="btn yel" id="undoBtn" aria-label="ย้อนกลับ">⌫</button><button class="btn wide2 red" id="clearBtn">ล้างทั้งหมด</button>
+      <button class="btn pri check" id="checkBtn">ตรวจคำตอบ</button>
+     </div>
+     <div class="feedback" id="feedback"></div>
+    </div>
+   </div>
+   <div class="card panel">
+    <h3>วิธีคิดทีละขั้นตอน</h3>
+    <ol class="steps" id="liveSteps"></ol>
+    <p class="muted small" id="stepsHint">สร้างสมการให้ครบ แล้วขั้นตอนการคำนวณจะแสดงที่นี่</p>
+    <h3 style="margin-top:14px"><label for="myExplain">อธิบายวิธีคิดของฉัน</label></h3>
+    <textarea id="myExplain" placeholder="เช่น หนูคิดว่า 8 × 5 ได้ 40 ใกล้เป้าหมาย แล้วจึงหาอีก 6 จาก 3 × 2"></textarea>
+    <div id="solBox"></div>
+   </div>
+  </div>
+  <div class="side">
+   <div class="target"><small>เป้าหมายของคุณ</small><div class="num" id="targetNum">--</div></div>
+   <div class="card">
+    <div class="ctrl" id="ctrlComp">
+     <button class="btn pri full" id="tStart">START</button>
+     <button class="btn yel" id="tPause">PAUSE</button>
+     <button class="btn sky" id="tResume">RESUME</button>
+     <button class="btn red" id="tStop">STOP</button>
+     <button class="btn org" id="tRestart">RESTART</button>
+     <button class="btn full" id="skipBtn">ข้ามข้อนี้</button>
+    </div>
+    <div class="ctrl" id="ctrlPrac">
+     <button class="btn pri full" id="nextBtn">ข้อต่อไป</button>
+     <button class="btn yel" id="hintBtn">คำใบ้</button>
+     <button class="btn sky" id="revealBtn">ดูเฉลย</button>
+     <button class="btn" id="pPause">พักเวลา</button>
+     <button class="btn red" id="endBtn">จบการฝึก</button>
+    </div>
+    <p class="muted small" id="sideNote" style="margin:12px 0 0"></p>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- ================= SUMMARY ================= -->
+<section class="view" id="v-summary">
+ <h2 id="sumTitle">สรุปผล</h2>
+ <div class="grid4" id="sumStats"></div>
+ <div id="sumMedals" style="margin-top:18px"></div>
+ <div class="row" style="margin:20px 0 6px"><button class="btn pri" id="againBtn">เล่นอีกครั้ง</button><button class="btn" data-act="home">หน้าหลัก</button><button class="btn yel" data-act="stats">ดูสถิติ</button></div>
+ <h3 style="margin-top:22px">เฉลยและวิธีคิดของแต่ละข้อ</h3>
+ <div id="sumList"></div>
+</section>
+
+<!-- ================= STATS ================= -->
+<section class="view" id="v-stats">
+ <h2>สถิติการเล่น</h2>
+ <div class="grid4" id="stTotals"></div>
+ <div class="card" style="margin-top:18px"><h3 style="margin-bottom:8px">แยกตามระดับความยาก</h3><div class="scroll"><table id="stDiff"></table></div></div>
+ <div class="card" style="margin-top:18px"><h3 style="margin-bottom:12px">เหรียญรางวัล</h3><div class="medals" id="stMedals"></div></div>
+ <div class="card" style="margin-top:18px"><h3 style="margin-bottom:8px">ประวัติการเล่น</h3><div class="scroll"><table id="stHist"></table></div></div>
+ <div class="row" style="margin-top:18px"><button class="btn red" id="resetStats">ล้างสถิติทั้งหมด</button><span class="muted small">ข้อมูลเก็บไว้ในเบราว์เซอร์เครื่องนี้</span></div>
+</section>
+
+<!-- ================= HOW TO ================= -->
+<section class="view howto" id="v-howto">
+ <h2>วิธีเล่น</h2>
+ <div class="card">
+  <h3>เป้าหมาย</h3>
+  <p>นำตัวเลขที่ได้รับมาสร้างสมการด้วยเครื่องหมาย + − × ÷ ^ และวงเล็บ ให้ได้ผลลัพธ์เท่ากับ “เป้าหมายของคุณ”</p>
+  <h3>2 ระดับของโจทย์</h3>
+  <ul><li><b>ระดับที่ 1</b> ตัวเลข 4 ตัว เป้าหมายเป็นเลข 2 หลัก</li><li><b>ระดับที่ 2</b> ตัวเลข 5 ตัว เป้าหมายเป็นเลข 3 หลัก</li></ul>
+  <h3>กติกาการใช้ตัวเลข (ค่าเริ่มต้น)</h3>
+  <ul><li>ใช้ตัวเลขแต่ละตัวได้ครั้งเดียว และต้องใช้ให้ครบทุกตัว</li><li>นำตัวเลขมาต่อกันเป็นเลขหลายหลักไม่ได้ ต้องมีเครื่องหมายคั่นเสมอ</li><li>หารด้วยศูนย์ไม่ได้ เลขชี้กำลังต้องเป็นจำนวนเต็มไม่เกินที่ตั้งไว้ (ค่าเริ่มต้น 3)</li><li>คุณครูเปลี่ยนกติกาได้ที่หน้าตั้งค่า</li></ul>
+  <h3>ลำดับการคำนวณ</h3>
+  <p>ในวงเล็บก่อน → ยกกำลัง → คูณ/หาร (จากซ้ายไปขวา) → บวก/ลบ (จากซ้ายไปขวา)</p>
+  <h3>ระดับความยาก</h3>
+  <ul><li><b>EASY</b> ใช้ + − × ÷ มีวิธีคิดได้หลายแบบ</li><li><b>NORMAL</b> ใช้ + − × ÷ ผสมกัน วิธีคิดน้อยลง</li><li><b>HARD</b> เพิ่มเลขยกกำลังและวงเล็บ</li><li><b>EXPERT</b> โจทย์ที่มีวิธีคิดน้อย ต้องวางแผนหลายขั้น</li></ul>
+  <h3>ตัวอย่าง</h3>
+  <p>ตัวเลข 2, 3, 5, 8 เป้าหมาย 46 → <b>8 × 5 + 3 × 2</b></p>
+  <ol class="steps"><li>8 × 5 = 40</li><li>3 × 2 = 6</li><li>40 + 6 = 46</li></ol>
+  <h3>คีย์บอร์ด</h3>
+  <p>พิมพ์ตัวเลข 0–9 เพื่อเลือกแผ่นตัวเลข, + − * / ^ ( ) สำหรับเครื่องหมาย, Backspace ย้อนกลับ, Esc ล้าง, Enter ตรวจคำตอบ</p>
+  <h3>คะแนน</h3>
+  <p>ได้คะแนนจากความถูกต้อง ความเร็ว ระดับความยาก และโบนัสเมื่อคิดได้เองในครั้งแรก (ใช้คำใบ้ได้คะแนนครึ่งเดียว) ตอบถูกเร็วได้สูงสุด 3 ดาว</p>
+ </div>
+</section>
+
+<!-- ================= SETTINGS ================= -->
+<section class="view" id="v-settings">
+ <h2>ตั้งค่า (คุณครู / ผู้ดูแล)</h2>
+ <div class="card">
+  <div class="check-row"><input type="checkbox" id="sSound"><label for="sSound">เปิดเสียงตอบรับ</label></div>
+  <label class="lab" style="margin-top:12px">กติกาการใช้ตัวเลข</label>
+  <div class="seg" id="sRule">
+   <button data-v="once-all">ใช้ครั้งเดียว ต้องใช้ครบ</button>
+   <button data-v="once-subset">ใช้ครั้งเดียว ใช้ไม่ครบได้</button>
+   <button data-v="reuse-all">ใช้ซ้ำได้ ต้องใช้ครบ</button>
+  </div>
+  <label class="lab" for="sExp">เลขชี้กำลังสูงสุด</label>
+  <select id="sExp"><option>2</option><option>3</option><option>4</option><option>5</option></select>
+  <div class="check-row" style="margin-top:10px"><input type="checkbox" id="sZero"><label for="sZero">สุ่มเลข 0 ได้ในโจทย์</label></div>
+  <div class="check-row"><input type="checkbox" id="sFrac"><label for="sFrac">อนุญาตเศษส่วน/ทศนิยมระหว่างทาง (เช่น 3 ÷ 2 = 1.5) — คำตอบสุดท้ายต้องเป็นจำนวนเต็มเสมอ</label></div>
+  <div class="check-row"><input type="checkbox" id="sNeg"><label for="sNeg">อนุญาตจำนวนติดลบระหว่างทาง</label></div>
+  <label class="lab" style="margin-top:12px">ค่าเริ่มต้นของเกม</label>
+  <div class="row"><select id="sLevel"><option value="1">ระดับที่ 1 (4 ตัว / 2 หลัก)</option><option value="2">ระดับที่ 2 (5 ตัว / 3 หลัก)</option></select>
+  <select id="sDiff"><option>EASY</option><option>NORMAL</option><option>HARD</option><option>EXPERT</option></select></div>
+  <div class="row" style="margin-top:18px"><button class="btn" id="sReset">คืนค่าเริ่มต้น</button><span class="muted small">บันทึกอัตโนมัติ</span></div>
+ </div>
+</section>
+
+<!-- ================= ABOUT ================= -->
+<section class="view" id="v-about">
+ <div class="card" style="text-align:center;max-width:640px;margin:0 auto">
+  <svg width="96" height="96"><use href="#logo"/></svg>
+  <h2 style="margin-top:10px">PORSCHE QUICK MATH</h2>
+  <p class="disp" style="font-size:22px;color:var(--sky);margin:4px 0 14px">พอร์ชคิดไว</p>
+  <p>Created &amp; Owned by</p>
+  <p class="disp" style="font-size:28px;margin:0">NONG PORSCHE</p>
+  <p class="muted">พัฒนาเพื่อส่งเสริมทักษะทางคณิตศาสตร์และการคิดวิเคราะห์สำหรับเด็ก</p>
+  <p class="muted small">ระบบตรวจสมการใช้ตัวแยกวิเคราะห์ของเกมเอง คำนวณด้วยเศษส่วนแบบแม่นยำ ไม่มีความคลาดเคลื่อนของทศนิยม และเล่นได้โดยไม่ต้องต่ออินเทอร์เน็ตเมื่อเปิดหน้าแล้ว</p>
+ </div>
+</section>
+
+<!-- ================= SETUP MODAL ================= -->
+<div class="modal" id="setup" role="dialog" aria-modal="true" aria-labelledby="setupTitle">
+ <div class="card">
+  <h2 id="setupTitle" style="font-size:26px;margin-bottom:10px">เลือกรูปแบบเกม</h2>
+  <label class="lab">โหมด</label>
+  <div class="seg" id="mMode"><button data-v="practice">ฝึกซ้อม</button><button data-v="comp">แข่งขันจับเวลา</button></div>
+  <label class="lab">ระดับโจทย์</label>
+  <div class="seg" id="mLevel"><button data-v="1">ระดับที่ 1 · 4 ตัว → 2 หลัก</button><button data-v="2">ระดับที่ 2 · 5 ตัว → 3 หลัก</button></div>
+  <label class="lab">ความยาก</label>
+  <div class="seg" id="mDiff"><button data-v="EASY">EASY</button><button data-v="NORMAL">NORMAL</button><button data-v="HARD">HARD</button><button data-v="EXPERT">EXPERT</button></div>
+  <div id="mCompBox">
+   <label class="lab">เวลาแข่งขัน</label>
+   <div class="seg" id="mTime"><button data-v="30">30 วิ</button><button data-v="60">60 วิ</button><button data-v="90">90 วิ</button><button data-v="120">120 วิ</button><button data-v="custom">กำหนดเอง</button></div>
+   <div class="row" id="mCustomTime" style="display:none;margin-bottom:12px"><input type="number" id="mMin" min="0" max="59" value="3" style="width:90px" aria-label="นาที"> นาที <input type="number" id="mSec" min="0" max="59" value="0" style="width:90px" aria-label="วินาที"> วินาที</div>
+  </div>
+  <div id="mPracBox">
+   <details><summary class="disp" style="cursor:pointer">คุณครูกำหนดโจทย์เอง (ไม่บังคับ)</summary>
+    <p class="muted small">ใส่ตัวเลข 4 หรือ 5 ตัวคั่นด้วยเว้นวรรค และคำตอบเป้าหมาย ระบบจะตรวจว่ามีวิธีคิดได้จริงก่อนเริ่ม</p>
+    <div class="row"><input type="text" id="cDigits" placeholder="เช่น 2 3 5 8" inputmode="numeric" style="flex:1 1 160px"><input type="number" id="cTarget" placeholder="เป้าหมาย" style="width:130px"><button class="btn sky" id="cCheck">ตรวจโจทย์</button></div>
+    <p class="small" id="cMsg"></p>
+   </details>
+  </div>
+  <div class="row" style="margin-top:16px;justify-content:flex-end"><button class="btn" id="mCancel">ยกเลิก</button><button class="btn pri" id="mGo" style="min-width:160px">เริ่มเลย!</button></div>
+ </div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/* ===== PORSCHE QUICK MATH — Game Logic (no DOM, no eval) ===== */
+const QM = (() => {
+  'use strict';
+  const OPS = ['+', '-', '×', '÷', '^'];
+  const PREC = { '+': 1, '-': 1, '×': 2, '÷': 2, '^': 3 };
+  const MAXSAFE = Number.MAX_SAFE_INTEGER;
+
+  /* ---------- exact fractions ---------- */
+  function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { const t = a % b; a = b; b = t; } return a; }
+  class Ovf extends Error {}
+  function mul(a, b) { const r = a * b; if (!Number.isSafeInteger(r)) throw new Ovf(); return r; }
+  function add(a, b) { const r = a + b; if (!Number.isSafeInteger(r)) throw new Ovf(); return r; }
+  function frac(n, d = 1) {
+    if (d < 0) { n = -n; d = -d; }
+    const g = gcd(n, d) || 1;
+    return { n: n / g, d: d / g };
+  }
+  const key = f => f.n + '/' + f.d;
+  const isInt = f => f.d === 1;
+  function fstr(f) { return f.d === 1 ? String(f.n) : f.n + '/' + f.d; }
+  function fdec(f) {
+    if (f.d === 1) return String(f.n);
+    const v = f.n / f.d;
+    return (Math.round(v * 10000) / 10000).toString();
+  }
+
+  /* Apply one operator. Returns {v} or {err:'code'} */
+  function apply(op, a, b, maxExp) {
+    try {
+      switch (op) {
+        case '+': return { v: frac(add(mul(a.n, b.d), mul(b.n, a.d)), mul(a.d, b.d)) };
+        case '-': return { v: frac(add(mul(a.n, b.d), -mul(b.n, a.d)), mul(a.d, b.d)) };
+        case '×': return { v: frac(mul(a.n, b.n), mul(a.d, b.d)) };
+        case '÷':
+          if (b.n === 0) return { err: 'div0' };
+          return { v: frac(mul(a.n, b.d), mul(a.d, b.n)) };
+        case '^': {
+          if (b.d !== 1) return { err: 'expfrac' };
+          if (b.n < 0) return { err: 'expneg' };
+          if (b.n > maxExp) return { err: 'expbig' };
+          if (a.n === 0 && b.n === 0) return { err: 'zerozero' };
+          let n = 1, d = 1;
+          for (let i = 0; i < b.n; i++) { n = mul(n, a.n); d = mul(d, a.d); }
+          return { v: frac(n, d) };
+        }
+      }
+      return { err: 'op' };
+    } catch (e) {
+      if (e instanceof Ovf) return { err: 'overflow' };
+      throw e;
+    }
+  }
+
+  /* ---------- default rules ---------- */
+  const DEFAULT_RULES = {
+    numberRule: 'once-all',   // 'once-all' | 'once-subset' | 'reuse-all'
+    maxExp: 3,
+    allowFrac: true,          // intermediate fractions allowed
+    allowNeg: true,           // intermediate negatives allowed
+    allowZero: true           // digit 0 may appear in puzzles
+  };
+  const DIFF = {
+    EASY:   { label: 'EASY',   th: 'ง่าย',     ops: ['+', '-', '×', '÷'], mult: 1 },
+    NORMAL: { label: 'NORMAL', th: 'ปานกลาง', ops: ['+', '-', '×', '÷'], mult: 1.25 },
+    HARD:   { label: 'HARD',   th: 'ยาก',      ops: ['+', '-', '×', '÷', '^'], mult: 1.6 },
+    EXPERT: { label: 'EXPERT', th: 'ผู้เชี่ยวชาญ', ops: ['+', '-', '×', '÷', '^'], mult: 2 }
+  };
+  const LEVELS = {
+    1: { count: 4, min: 10, max: 99, th: 'ระดับที่ 1', base: 100 },
+    2: { count: 5, min: 100, max: 999, th: 'ระดับที่ 2', base: 200 }
+  };
+
+  /* ---------- solver: exhaustive DP over subsets ---------- */
+  // Each entry: {v, e (tree), c (count of derivations), s (niceness: number of non-whole / negative steps)}
+  const SOLVE_VCAP = 1e6, SOLVE_DCAP = 1e4;
+  function solve(digits, ops, rules) {
+    const n = digits.length, full = (1 << n) - 1;
+    const memo = new Array(full + 1);
+    for (let i = 0; i < n; i++) {
+      const v = frac(digits[i]);
+      memo[1 << i] = new Map([[key(v), { v, e: { t: 'n', i, v }, c: 1, s: 0 }]]);
+    }
+    const masks = [];
+    for (let m = 1; m <= full; m++) masks.push(m);
+    const pc = m => { let c = 0; while (m) { c += m & 1; m >>= 1; } return c; };
+    masks.sort((a, b) => pc(a) - pc(b));
+    for (const mask of masks) {
+      if (pc(mask) < 2) continue;
+      const out = new Map();
+      for (let sub = (mask - 1) & mask; sub > 0; sub = (sub - 1) & mask) {
+        const oth = mask ^ sub;
+        const A = memo[sub], B = memo[oth];
+        for (const x of A.values()) {
+          for (const y of B.values()) {
+            for (const op of ops) {
+              if ((op === '+' || op === '×') && sub > oth) continue; // commutative: one order only
+              const r = apply(op, x.v, y.v, rules.maxExp);
+              if (r.err) continue;
+              const v = r.v;
+              if (Math.abs(v.n) > SOLVE_VCAP || v.d > SOLVE_DCAP) continue;
+              const nice = v.d === 1 && v.n >= 0;
+              if (!rules.allowFrac && v.d !== 1) continue;
+              if (!rules.allowNeg && v.n < 0) continue;
+              const s = x.s + y.s + (nice ? 0 : 1) + (op === '^' ? 0.01 : 0);
+              const k = key(v);
+              const cur = out.get(k);
+              const c = Math.min(1e12, x.c * y.c);
+              if (!cur) out.set(k, { v, e: { t: 'o', op, l: x.e, r: y.e, v }, c, s });
+              else {
+                cur.c = Math.min(1e12, cur.c + c);
+                if (s < cur.s) { cur.s = s; cur.e = { t: 'o', op, l: x.e, r: y.e, v }; }
+              }
+            }
+          }
+        }
+      }
+      memo[mask] = out;
+    }
+    return { memo, full, n };
+  }
+
+  // Values reachable under the number rule
+  function reachable(res, rules) {
+    if (rules.numberRule === 'once-subset') {
+      const all = new Map();
+      for (let m = 1; m <= res.full; m++) {
+        for (const [k, e] of res.memo[m]) {
+          const cur = all.get(k);
+          if (!cur) all.set(k, { ...e });
+          else { cur.c += e.c; if (e.s < cur.s) { cur.s = e.s; cur.e = e.e; } }
+        }
+      }
+      return all;
+    }
+    return res.memo[res.full];
+  }
+
+  /* ---------- formatting & steps ---------- */
+  function fmt(e, digits) {
+    if (e.t === 'n') return String(e.v.n);
+    const p = PREC[e.op];
+    const L = fmt(e.l), R = fmt(e.r);
+    const lp = e.l.t === 'o' ? PREC[e.l.op] : 9;
+    const rp = e.r.t === 'o' ? PREC[e.r.op] : 9;
+    const wl = e.op === '^' ? lp <= 3 : lp < p;
+    const wr = e.op === '^' ? rp < 3 : (rp < p || (rp === p && (e.op === '-' || e.op === '÷')));
+    return (wl ? '(' + L + ')' : L) + ' ' + e.op + ' ' + (wr ? '(' + R + ')' : R);
+  }
+  function steps(e) {
+    const out = [];
+    (function walk(x) {
+      if (x.t === 'n') return;
+      walk(x.l); walk(x.r);
+      out.push({ a: x.l.v, op: x.op, b: x.r.v, r: x.v, text: fstr(x.l.v) + ' ' + x.op + ' ' + fstr(x.r.v) + ' = ' + fstr(x.v) });
+    })(e);
+    return out;
+  }
+  const OPWORD = { '+': 'บวก', '-': 'ลบด้วย', '×': 'คูณด้วย', '÷': 'หารด้วย', '^': 'ยกกำลัง' };
+  function explain(e, target) {
+    const st = steps(e);
+    if (!st.length) return 'ตัวเลขนี้เท่ากับเป้าหมายพอดี';
+    const parts = st.map((s, i) => {
+      const lead = i === 0 ? 'เริ่มจากนำ' : (i === st.length - 1 ? 'สุดท้ายนำ' : 'ต่อมานำ');
+      return lead + ' ' + fstr(s.a) + ' ' + OPWORD[s.op] + ' ' + fstr(s.b) + ' ได้ ' + fstr(s.r);
+    });
+    const big = e.t === 'o' ? e.op : null;
+    let plan = '';
+    if (big === '+' || big === '-') plan = 'แนวคิด: หาตัวเลขที่ใกล้ ' + target + ' ก่อน แล้วปรับเพิ่มหรือลดด้วยตัวเลขที่เหลือ';
+    else if (big === '×') plan = 'แนวคิด: แยก ' + target + ' เป็นผลคูณของสองจำนวน แล้วสร้างแต่ละจำนวนจากตัวเลขที่มี';
+    else if (big === '÷') plan = 'แนวคิด: สร้างจำนวนที่ใหญ่กว่าเป้าหมาย แล้วหารให้ลงตัวพอดี';
+    else if (big === '^') plan = 'แนวคิด: ใช้เลขยกกำลังสร้างจำนวนใหญ่ได้เร็ว';
+    return (plan ? plan + ' — ' : '') + parts.join(', ') + ' ซึ่งตรงกับเป้าหมาย ' + target;
+  }
+
+  function solutionsFor(res, target, rules, ops, max = 3) {
+    const tk = key(frac(target));
+    const found = new Map();
+    const masks = rules.numberRule === 'once-subset'
+      ? Array.from({ length: res.full }, (_, i) => res.full - i) : [res.full];
+    for (const mask of masks) {
+      const hit = res.memo[mask].get(tk);
+      if (!hit) continue;
+      if (hit.e.t === 'n') { found.set(fmt(hit.e), { e: hit.e, s: 0 }); continue; }
+      for (let sub = (mask - 1) & mask; sub > 0; sub = (sub - 1) & mask) {
+        const oth = mask ^ sub;
+        for (const x of res.memo[sub].values()) for (const y of res.memo[oth].values()) for (const op of ops) {
+          if ((op === '+' || op === '×') && sub > oth) continue;
+          const r = apply(op, x.v, y.v, rules.maxExp);
+          if (r.err || key(r.v) !== tk) continue;
+          const e = { t: 'o', op, l: x.e, r: y.e, v: r.v };
+          const str = fmt(e);
+          if (!found.has(str)) found.set(str, { e, s: x.s + y.s });
+        }
+      }
+      if (found.size >= 40) break;
+    }
+    // prefer whole-number steps, then shorter, then variety of top operator
+    const list = [...found.entries()].map(([str, o]) => ({ str, e: o.e, s: o.s }))
+      .sort((a, b) => a.s - b.s || a.str.length - b.str.length);
+    const pick = [], seenTop = new Set();
+    for (const it of list) { if (pick.length >= max) break; const t = it.e.op || 'n'; if (!seenTop.has(t)) { pick.push(it); seenTop.add(t); } }
+    for (const it of list) { if (pick.length >= max) break; if (!pick.includes(it)) pick.push(it); }
+    return pick.map(it => ({ expr: it.str, tree: it.e, steps: steps(it.e).map(s => s.text), explain: explain(it.e, target) }));
+  }
+
+  /* ---------- puzzle generator ---------- */
+  function randDigit(rules, rnd) { return rules.allowZero ? Math.floor(rnd() * 10) : 1 + Math.floor(rnd() * 9); }
+  function puzzleKey(digits, target) { return [...digits].sort((a, b) => a - b).join('') + '>' + target; }
+
+  function generate(level, diff, rules, opts = {}) {
+    rules = { ...DEFAULT_RULES, ...rules };
+    const rnd = opts.rnd || Math.random;
+    const recent = opts.recent || new Set();
+    const L = LEVELS[level], D = DIFF[diff];
+    const band = { EASY: [0, 0.3], NORMAL: [0.25, 0.65], HARD: [0.3, 0.8], EXPERT: [0.7, 1] }[diff];
+    for (let attempt = 0; attempt < 60; attempt++) {
+      const digits = [];
+      for (let i = 0; i < L.count; i++) digits.push(randDigit(rules, rnd));
+      if (digits.filter(d => d === 0).length > 1) continue;
+      if (new Set(digits).size < Math.min(3, L.count - 1)) continue;
+      const res = solve(digits, D.ops, rules);
+      const reach = reachable(res, rules);
+      let cands = [];
+      for (const ent of reach.values()) {
+        const v = ent.v;
+        if (v.d !== 1 || v.n < L.min || v.n > L.max) continue;
+        if ((diff === 'EASY' || diff === 'NORMAL') && ent.s >= 1) continue; // whole-number path required
+        cands.push({ t: v.n, c: ent.c, s: ent.s });
+      }
+      if (diff === 'HARD' || diff === 'EXPERT') {
+        // prefer targets that genuinely need a power
+        const noPow = reachable(solve(digits, ['+', '-', '×', '÷'], rules), rules);
+        const needPow = cands.filter(c => !noPow.has(c.t + '/1'));
+        if (diff === 'HARD' && needPow.length >= 3) cands = needPow;
+        if (diff === 'EXPERT' && needPow.length >= 2) cands = needPow;
+      }
+      cands = cands.filter(c => !recent.has(puzzleKey(digits, c.t)));
+      if (cands.length < 2) continue;
+      cands.sort((a, b) => b.c - a.c);
+      const lo = Math.floor(band[0] * cands.length), hi = Math.max(lo + 1, Math.ceil(band[1] * cands.length));
+      const slice = cands.slice(lo, hi);
+      const choice = slice[Math.floor(rnd() * slice.length)];
+      const solutions = solutionsFor(res, choice.t, rules, D.ops, 3);
+      if (!solutions.length) continue; // never ship an unsolvable puzzle
+      return { digits, target: choice.t, level, diff, ops: D.ops, ways: choice.c, solutions, key: puzzleKey(digits, choice.t) };
+    }
+    return null;
+  }
+
+  // Teacher-defined puzzle: check solvability and give solutions
+  function analyse(digits, target, diff, rules) {
+    rules = { ...DEFAULT_RULES, ...rules };
+    const D = DIFF[diff];
+    const res = solve(digits, D.ops, rules);
+    const sols = solutionsFor(res, target, rules, D.ops, 3);
+    return sols;
+  }
+
+  /* ---------- tokens, parser, checker ---------- */
+  // token: {k:'num', i, v} | {k:'op', o} | {k:'('} | {k:')'}
+  const MSG = {
+    empty: 'ยังไม่ได้สร้างสมการ',
+    needOperand: 'ต้องมีตัวเลขหรือวงเล็บหลังเครื่องหมาย',
+    adjacent: 'ตัวเลขสองตัวติดกันไม่ได้ ต้องมีเครื่องหมายคั่น',
+    unclosed: 'วงเล็บยังปิดไม่ครบ',
+    extraClose: 'มีวงเล็บปิดเกิน',
+    emptyParen: 'ในวงเล็บต้องมีตัวเลข',
+    startOp: 'สมการต้องเริ่มด้วยตัวเลขหรือวงเล็บเปิด',
+    div0: 'หารด้วยศูนย์ไม่ได้',
+    expfrac: 'เลขชี้กำลังต้องเป็นจำนวนเต็ม',
+    expneg: 'เลขชี้กำลังต้องไม่ติดลบ',
+    expbig: n => 'เลขชี้กำลังต้องไม่เกิน ' + n,
+    zerozero: '0 ยกกำลัง 0 หาค่าไม่ได้',
+    overflow: 'ตัวเลขใหญ่เกินกว่าจะคำนวณได้',
+    fracStep: 'กติกานี้ไม่อนุญาตให้มีเศษส่วนระหว่างทาง',
+    negStep: 'กติกานี้ไม่อนุญาตให้มีค่าติดลบระหว่างทาง',
+    opNotAllowed: o => 'ระดับความยากนี้ไม่อนุญาตเครื่องหมาย ' + o,
+    unusedAll: n => 'ยังใช้ตัวเลขไม่ครบ (เหลืออีก ' + n + ' ตัว)',
+    reused: 'ใช้ตัวเลขซ้ำไม่ได้ตามกติกา',
+    wrong: (v, t) => 'ผลลัพธ์คือ ' + v + ' ยังไม่เท่ากับเป้าหมาย ' + t
+  };
+
+  // Whether a token may follow the current sequence (prevents malformed input early)
+  function canAppend(tokens, tok) {
+    const last = tokens[tokens.length - 1];
+    const lastK = last ? last.k : null;
+    const open = tokens.reduce((s, t) => s + (t.k === '(' ? 1 : t.k === ')' ? -1 : 0), 0);
+    const afterValue = lastK === 'num' || lastK === ')';
+    if (tok.k === 'num' || tok.k === '(') {
+      if (afterValue) return tok.k === 'num' ? MSG.adjacent : 'ต้องมีเครื่องหมายก่อนวงเล็บเปิด';
+      return null;
+    }
+    if (tok.k === 'op') return afterValue ? null : (lastK === null ? MSG.startOp : MSG.needOperand);
+    if (tok.k === ')') {
+      if (open <= 0) return MSG.extraClose;
+      if (lastK === '(') return MSG.emptyParen;
+      if (!afterValue) return MSG.needOperand;
+      return null;
+    }
+    return 'ไม่รู้จักปุ่มนี้';
+  }
+
+  function parse(tokens) {
+    let p = 0;
+    const err = (m, incomplete) => { const e = new Error(m); e.incomplete = !!incomplete; throw e; };
+    const peek = () => tokens[p];
+    function expr() {
+      let l = term();
+      while (peek() && peek().k === 'op' && (peek().o === '+' || peek().o === '-')) { const o = tokens[p++].o; l = { t: 'o', op: o, l, r: term() }; }
+      return l;
+    }
+    function term() {
+      let l = power();
+      while (peek() && peek().k === 'op' && (peek().o === '×' || peek().o === '÷')) { const o = tokens[p++].o; l = { t: 'o', op: o, l, r: power() }; }
+      return l;
+    }
+    function power() {
+      const b = atom();
+      if (peek() && peek().k === 'op' && peek().o === '^') { p++; return { t: 'o', op: '^', l: b, r: power() }; }
+      return b;
+    }
+    function atom() {
+      const t = peek();
+      if (!t) err(p === 0 ? MSG.empty : MSG.needOperand, true);
+      if (t.k === 'num') { p++; return { t: 'n', i: t.i, v: frac(t.v) }; }
+      if (t.k === '(') {
+        p++;
+        if (peek() && peek().k === ')') err(MSG.emptyParen);
+        const e = expr();
+        if (!peek()) err(MSG.unclosed, true);
+        if (peek().k !== ')') err(peek().k === 'num' ? MSG.adjacent : MSG.unclosed);
+        p++; return e;
+      }
+      if (t.k === 'op') err(p === 0 ? MSG.startOp : MSG.needOperand);
+      err(MSG.extraClose);
+    }
+    if (!tokens.length) err(MSG.empty, true);
+    const tree = expr();
+    if (p < tokens.length) {
+      const t = tokens[p];
+      err(t.k === ')' ? MSG.extraClose : (t.k === 'num' || t.k === '(') ? MSG.adjacent : MSG.needOperand);
+    }
+    return tree;
+  }
+
+  function evaluate(tree, rules, allowedOps) {
+    (function walk(x) {
+      if (x.t === 'n') return;
+      walk(x.l); walk(x.r);
+      if (allowedOps && !allowedOps.includes(x.op)) { const e = new Error(MSG.opNotAllowed(x.op)); e.code = 'op'; throw e; }
+      const r = apply(x.op, x.l.v, x.r.v, rules.maxExp);
+      if (r.err) {
+        const m = r.err === 'expbig' ? MSG.expbig(rules.maxExp) : MSG[r.err];
+        const e = new Error(m); e.code = r.err; throw e;
+      }
+      x.v = r.v;
+    })(tree);
+    return tree;
+  }
+
+  function usage(tokens, n) {
+    const u = new Array(n).fill(0);
+    for (const t of tokens) if (t.k === 'num') u[t.i]++;
+    return u;
+  }
+
+  // Live preview while building
+  function preview(tokens, rules) {
+    rules = { ...DEFAULT_RULES, ...rules };
+    if (!tokens.length) return { state: 'empty', msg: 'แตะตัวเลขเพื่อเริ่มสร้างสมการ' };
+    let tree;
+    try { tree = parse(tokens); } catch (e) { return { state: e.incomplete ? 'partial' : 'error', msg: e.message }; }
+    try { evaluate(tree, rules, null); } catch (e) { return { state: 'error', msg: e.message }; }
+    return { state: 'ok', value: tree.v, text: fstr(tree.v), dec: fdec(tree.v), steps: steps(tree).map(s => s.text), expr: fmt(tree) };
+  }
+
+  // Full answer check, in the order the rules list them
+  function check(tokens, puzzle, rules) {
+    rules = { ...DEFAULT_RULES, ...rules };
+    const n = puzzle.digits.length;
+    let tree;
+    // 1. format
+    try { tree = parse(tokens); } catch (e) { return { ok: false, stage: 'format', msg: e.message }; }
+    // 2-3. numbers used per rule (tokens reference tiles, so only puzzle digits can appear)
+    for (const t of tokens) if (t.k === 'num' && (t.i < 0 || t.i >= n || puzzle.digits[t.i] !== t.v)) return { ok: false, stage: 'numbers', msg: 'ใช้ตัวเลขที่ไม่ได้อยู่ในโจทย์' };
+    const u = usage(tokens, n);
+    if (rules.numberRule !== 'reuse-all' && u.some(c => c > 1)) return { ok: false, stage: 'repeat', msg: MSG.reused };
+    if (rules.numberRule !== 'once-subset') {
+      const miss = u.filter(c => c === 0).length;
+      if (miss) return { ok: false, stage: 'numbers', msg: MSG.unusedAll(miss) };
+    }
+    // 6. operators allowed
+    const used = new Set(tokens.filter(t => t.k === 'op').map(t => t.o));
+    for (const o of used) if (!puzzle.ops.includes(o)) return { ok: false, stage: 'ops', msg: MSG.opNotAllowed(o) };
+    // 4. evaluate (division by zero, powers, overflow)
+    try { evaluate(tree, rules, puzzle.ops); } catch (e) { return { ok: false, stage: e.code === 'div0' ? 'div0' : 'calc', msg: e.message }; }
+    const st = steps(tree);
+    if (!rules.allowFrac && st.some(s => s.r.d !== 1)) return { ok: false, stage: 'calc', msg: MSG.fracStep };
+    if (!rules.allowNeg && st.some(s => s.r.n < 0)) return { ok: false, stage: 'calc', msg: MSG.negStep };
+    // 5. result
+    const v = tree.v;
+    const ok = v.d === 1 && v.n === puzzle.target;
+    return { ok, stage: ok ? 'done' : 'result', msg: ok ? 'ยอดเยี่ยม! คุณคิดถูกต้องแล้ว' : MSG.wrong(fstr(v), puzzle.target), value: fstr(v), expr: fmt(tree), steps: st.map(s => s.text), usedPow: used.has('^') };
+  }
+
+  /* ---------- scoring ---------- */
+  function scoreFor({ level, diff, timeSec, wrong, hint }) {
+    const base = LEVELS[level].base, m = DIFF[diff].mult;
+    const speed = Math.max(0, 60 - timeSec);                // faster = more
+    const self = !hint && wrong === 0 ? 25 : 0;              // solved alone, first try
+    let s = (base + speed + self) * m - wrong * 10;
+    if (hint) s *= 0.5;
+    s = Math.max(Math.round(base * m * 0.3), Math.round(s));
+    const stars = (!hint && wrong === 0 && timeSec <= 30) ? 3 : (!hint && wrong <= 1 && timeSec <= 90) ? 2 : 1;
+    return { score: s, stars, speed: Math.round(speed * m) };
+  }
+
+  return { OPS, DIFF, LEVELS, DEFAULT_RULES, frac, fstr, fdec, apply, solve, reachable, solutionsFor, generate, analyse, canAppend, parse, evaluate, preview, check, scoreFor, fmt, steps, puzzleKey, MSG };
+})();
+
+
+</script>
+<script>
+{
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+};
+const DEF = { sound: true, level: 1, diff: 'EASY', numberRule: 'once-all', maxExp: 3, allowFrac: true, allowNeg: true, allowZero: true, compTime: 60, mode: 'practice' };
+let settings = { ...DEF, ...store.get('pqm.settings', {}) };
+const saveSettings = () => store.set('pqm.settings', settings);
+const rules = () => ({ numberRule: settings.numberRule, maxExp: +settings.maxExp, allowFrac: settings.allowFrac, allowNeg: settings.allowNeg, allowZero: settings.allowZero });
+const blankStats = () => ({ problems: 0, correct: 0, wrong: 0, score: 0, timeSum: 0, stars: 0, byDiff: {}, byLevel: {}, sessions: [], medals: {} });
+let stats = { ...blankStats(), ...store.get('pqm.stats', {}) };
+let recent = store.get('pqm.recent', []);
+
+/* ---------- sound ---------- */
+let ac = null;
+function tone(f, d, type = 'sine', delay = 0, vol = 0.18) {
+  if (!settings.sound) return;
+  try {
+    ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+    const t = ac.currentTime + delay, o = ac.createOscillator(), g = ac.createGain();
+    o.type = type; o.frequency.value = f; g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.001, t + d);
+    o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + d + 0.02);
+  } catch (e) {}
+}
+const sfx = {
+  tap: () => tone(660, 0.08, 'triangle'), op: () => tone(440, 0.07, 'triangle'),
+  good: () => [523, 659, 784, 1047].forEach((f, i) => tone(f, 0.18, 'triangle', i * 0.09)),
+  bad: () => { tone(220, 0.2, 'sawtooth', 0, 0.08); tone(180, 0.25, 'sawtooth', 0.12, 0.08); },
+  tick: () => tone(880, 0.05, 'square', 0, 0.05), end: () => [784, 659, 523].forEach((f, i) => tone(f, 0.25, 'triangle', i * 0.15)),
+  warn: () => tone(300, 0.1, 'square', 0, 0.06)
+};
+function renderMute() { $('#muteIcon').setAttribute('href', settings.sound ? '#i-sound' : '#i-mute'); }
+$('#muteBtn').onclick = () => { settings.sound = !settings.sound; saveSettings(); renderMute(); toast(settings.sound ? 'เปิดเสียงแล้ว' : 'ปิดเสียงแล้ว'); };
+
+/* ---------- helpers ---------- */
+let toastT;
+function toast(m) { const t = $('#toast'); t.textContent = m; t.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), 2200); }
+const mmss = s => { s = Math.max(0, Math.ceil(s)); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); };
+const starSvg = '<svg viewBox="0 0 24 24" width="26" height="26"><use href="#i-star"/></svg>';
+function burst(el, points) {
+  const r = el.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+  const cols = ['#ffc93c', '#38b6f2', '#2fbf5b', '#ff8a3d'];
+  for (let i = 0; i < 14; i++) {
+    const s = document.createElement('div'); s.className = 'fx'; s.innerHTML = starSvg; s.style.color = cols[i % 4];
+    s.style.left = cx - 13 + 'px'; s.style.top = cy - 13 + 'px';
+    const a = (Math.PI * 2 * i) / 14, d = 90 + Math.random() * 90;
+    s.style.setProperty('--dx', Math.cos(a) * d + 'px'); s.style.setProperty('--dy', Math.sin(a) * d + 'px');
+    document.body.appendChild(s); setTimeout(() => s.remove(), 1000);
+  }
+  if (points) { const p = document.createElement('div'); p.className = 'plus'; p.textContent = '+' + points; p.style.left = cx - 40 + 'px'; p.style.top = cy - 40 + 'px'; document.body.appendChild(p); setTimeout(() => p.remove(), 1300); }
+}
+
+/* ---------- views ---------- */
+function show(v) {
+  $$('.view').forEach(x => x.classList.toggle('on', x.id === 'v-' + v));
+  if (v !== 'play' && S && S.running && !S.over) pauseGame(true);
+  if (v === 'home') renderHome();
+  if (v === 'stats') renderStats();
+  if (v === 'settings') renderSettings();
+  window.scrollTo(0, 0);
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-act]'); if (!b) return;
+  const a = b.dataset.act;
+  if (a === 'start') openSetup(settings.mode);
+  else if (a === 'practice') openSetup('practice');
+  else if (a === 'comp') openSetup('comp');
+  else show(a);
+});
+$('#goHome').onclick = $('#homeBtn').onclick = () => show('home');
+
+function renderHome() {
+  const acc = stats.problems ? Math.round(stats.correct / stats.problems * 100) : 0;
+  $('#homeStrip').innerHTML = [[stats.stars, 'ดาวสะสม'], [Object.keys(stats.medals).length + '/' + MEDALS.length, 'เหรียญรางวัล'], [stats.score.toLocaleString(), 'คะแนนรวม'], [acc + '%', 'ความถูกต้อง']]
+    .map(([b, s]) => `<div class="stat"><b>${b}</b><span>${s}</span></div>`).join('');
+}
+
+/* ---------- setup modal ---------- */
+let pick = {}, customPz = null;
+function seg(id, val) { $$('#' + id + ' button').forEach(b => b.classList.toggle('on', b.dataset.v === String(val))); }
+function openSetup(mode) {
+  pick = { mode, level: settings.level, diff: settings.diff, time: [30, 60, 90, 120].includes(+settings.compTime) ? String(settings.compTime) : 'custom' };
+  if (pick.time === 'custom') { $('#mMin').value = Math.floor(settings.compTime / 60); $('#mSec').value = settings.compTime % 60; }
+  customPz = null; $('#cMsg').textContent = '';
+  syncSetup(); $('#setup').classList.add('on'); $('#mGo').focus();
+}
+function syncSetup() {
+  seg('mMode', pick.mode); seg('mLevel', pick.level); seg('mDiff', pick.diff); seg('mTime', pick.time);
+  $('#mCompBox').style.display = pick.mode === 'comp' ? '' : 'none';
+  $('#mPracBox').style.display = pick.mode === 'practice' ? '' : 'none';
+  $('#mCustomTime').style.display = pick.time === 'custom' ? '' : 'none';
+}
+[['mMode', 'mode'], ['mLevel', 'level'], ['mDiff', 'diff'], ['mTime', 'time']].forEach(([id, k]) =>
+  $('#' + id).addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; pick[k] = k === 'level' ? +b.dataset.v : b.dataset.v; customPz = null; syncSetup(); }));
+$('#mCancel').onclick = () => $('#setup').classList.remove('on');
+$('#setup').addEventListener('click', e => { if (e.target.id === 'setup') $('#setup').classList.remove('on'); });
+$('#cCheck').onclick = () => {
+  const ds = $('#cDigits').value.trim().split(/[\s,]+/).filter(Boolean).map(Number);
+  const t = Number($('#cTarget').value);
+  const m = $('#cMsg'); customPz = null;
+  if (!(ds.length === 4 || ds.length === 5) || ds.some(d => !Number.isInteger(d) || d < 0 || d > 9)) { m.textContent = 'ใส่ตัวเลขหลักเดียว (0–9) จำนวน 4 หรือ 5 ตัว'; return; }
+  const L = ds.length === 4 ? 1 : 2, lv = QM.LEVELS[L];
+  if (!Number.isInteger(t) || t < lv.min || t > lv.max) { m.textContent = `ตัวเลข ${ds.length} ตัวต้องมีเป้าหมาย ${lv.min}–${lv.max}`; return; }
+  const sols = QM.analyse(ds, t, pick.diff, rules());
+  if (!sols.length) { m.textContent = `โจทย์นี้ไม่มีวิธีคิดได้ ตามกติกาและความยาก ${pick.diff} ลองเปลี่ยนเป้าหมาย หรือเลือก HARD/EXPERT เพื่อใช้เลขยกกำลัง`; return; }
+  customPz = { digits: ds, target: t, level: L, diff: pick.diff, ops: QM.DIFF[pick.diff].ops, solutions: sols, key: QM.puzzleKey(ds, t), custom: true };
+  pick.level = L; syncSetup();
+  m.textContent = 'ใช้ได้! โจทย์นี้มีวิธีคิดได้จริง กด “เริ่มเลย!” เพื่อเล่นโจทย์นี้';
+};
+$('#mGo').onclick = () => {
+  let time = 60;
+  if (pick.mode === 'comp') {
+    time = pick.time === 'custom' ? (+$('#mMin').value || 0) * 60 + (+$('#mSec').value || 0) : +pick.time;
+    if (time < 10 || time > 3600) { toast('กำหนดเวลาได้ 10 วินาที ถึง 60 นาที'); return; }
+    settings.compTime = time;
+  }
+  settings.mode = pick.mode; settings.level = pick.level; settings.diff = pick.diff; saveSettings();
+  $('#setup').classList.remove('on');
+  startSession({ mode: pick.mode, level: pick.level, diff: pick.diff, time, custom: pick.mode === 'practice' ? customPz : null });
+};
+
+/* ---------- game session ---------- */
+let S = null, timerId = null, lastTick = 0;
+function startSession(cfg) {
+  stopTimer();
+  S = { ...cfg, problems: [], cur: null, score: 0, remaining: cfg.time, running: false, paused: false, over: false, ready: cfg.mode === 'comp', streak: 0, bestStreak: 0, newMedals: [] };
+  $('#ctrlComp').style.display = S.mode === 'comp' ? '' : 'none';
+  $('#ctrlPrac').style.display = S.mode === 'practice' ? '' : 'none';
+  $('#hLevel').textContent = QM.LEVELS[S.level].th;
+  $('#hCount').textContent = 'ใช้ตัวเลข ' + QM.LEVELS[S.level].count + ' ตัว';
+  $('#hDiff').textContent = S.diff;
+  $('#powKey').disabled = !QM.DIFF[S.diff].ops.includes('^');
+  $('#powKey').title = $('#powKey').disabled ? 'เลขยกกำลังใช้ได้ในระดับ HARD และ EXPERT' : '';
+  $('#sideNote').textContent = S.mode === 'comp' ? 'ตอบให้ได้มากที่สุดก่อนหมดเวลา เฉลยจะแสดงเมื่อจบการแข่งขัน' : 'ฝึกได้ไม่จำกัดเวลา ใช้คำใบ้หรือดูเฉลยได้ (คะแนนลดลง)';
+  show('play');
+  newProblem();
+  if (S.mode === 'comp') { S.running = false; renderClock(); veil('กด START เพื่อเริ่มแข่งขัน'); }
+  else { S.running = true; startTimer(); }
+  syncControls();
+}
+function newProblem() {
+  let pz = null;
+  if (S.custom && !S.problems.length) pz = S.custom;
+  else pz = QM.generate(S.level, S.diff, rules(), { recent: new Set(recent) });
+  if (!pz) { toast('สุ่มโจทย์ไม่สำเร็จ ลองปรับกติกาในหน้าตั้งค่า'); return; }
+  recent.push(pz.key); recent = recent.slice(-80); store.set('pqm.recent', recent);
+  S.cur = { pz, tokens: [], wrong: 0, hint: false, t: 0, status: 'open', explain: '', answer: '', score: 0, stars: 0 };
+  S.problems.push(S.cur);
+  $('#myExplain').value = '';
+  $('#feedback').className = 'feedback'; $('#solBox').innerHTML = '';
+  renderPuzzle(); renderBuilder(); syncControls();
+}
+function renderPuzzle() {
+  const pz = S.cur.pz, n = pz.digits.length;
+  $('#tiles').style.gridTemplateColumns = `repeat(${n},minmax(0,1fr))`;
+  $('#tiles').innerHTML = pz.digits.map((d, i) => `<button class="tile c${i % 5}" data-i="${i}" aria-label="ตัวเลข ${d}">${d}<span class="cnt"></span></button>`).join('') + '<div class="veil" id="veil"></div>';
+  $('#targetNum').textContent = pz.target;
+  $('#hProb').textContent = 'ข้อที่ ' + S.problems.length;
+  $('#hScore').textContent = S.score.toLocaleString() + ' คะแนน';
+}
+function veil(msg) { const v = $('#veil'); if (!v) return; v.textContent = msg || ''; v.classList.toggle('on', !!msg); }
+const active = () => S && S.cur && S.cur.status === 'open' && S.running && !S.paused && !S.over;
+
+/* ---------- equation builder ---------- */
+function addToken(tok, el) {
+  if (!active()) { if (S && S.mode === 'comp' && !S.running && !S.over) toast('กด START ก่อนนะ'); return; }
+  const c = S.cur;
+  if (tok.k === 'num' && settings.numberRule !== 'reuse-all' && c.tokens.some(t => t.k === 'num' && t.i === tok.i)) { toast('ตัวเลขนี้ใช้ไปแล้ว'); sfx.warn(); shake(el); return; }
+  const err = QM.canAppend(c.tokens, tok);
+  if (err) { toast(err); sfx.warn(); shake($('#eq')); return; }
+  c.tokens.push(tok);
+  (tok.k === 'num' ? sfx.tap : sfx.op)();
+  hideFeedback(); renderBuilder();
+}
+function shake(el) { if (!el) return; el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); }
+function renderBuilder() {
+  const c = S.cur, pz = c.pz;
+  const chips = c.tokens.map(t => t.k === 'num' ? `<span class="tk c${t.i % 5}">${t.v}</span>` : `<span class="tk op">${t.k === 'op' ? (t.o === '-' ? '−' : t.o) : t.k}</span>`).join('');
+  $('#eq').innerHTML = chips ? chips + '<span class="caret"></span>' : '<span class="ph">แตะตัวเลขและเครื่องหมายเพื่อสร้างสมการ</span>';
+  const u = new Array(pz.digits.length).fill(0); c.tokens.forEach(t => t.k === 'num' && u[t.i]++);
+  $$('#tiles .tile').forEach((b, i) => {
+    b.classList.toggle('used', u[i] > 0 && settings.numberRule !== 'reuse-all');
+    b.classList.toggle('multi', settings.numberRule === 'reuse-all' && u[i] > 0);
+    b.querySelector('.cnt').textContent = settings.numberRule === 'reuse-all' ? '×' + u[i] : '✓';
+  });
+  const p = QM.preview(c.tokens, rules());
+  const usedN = u.filter(x => x > 0).length;
+  const msg = $('#liveMsg'), val = $('#liveVal');
+  $('#eq').classList.toggle('err', p.state === 'error');
+  if (p.state === 'ok') {
+    const left = settings.numberRule === 'once-subset' ? '' : (usedN < pz.digits.length ? ` · ยังเหลือตัวเลข ${pz.digits.length - usedN} ตัว` : ' · ใช้ตัวเลขครบแล้ว');
+    msg.className = 'msg ok'; msg.textContent = 'สมการถูกรูปแบบ' + left;
+    val.textContent = '= ' + p.text + (p.value.d !== 1 ? ' (≈ ' + p.dec + ')' : '');
+  } else { msg.className = 'msg ' + (p.state === 'error' ? 'err' : 'part'); msg.textContent = p.msg; val.textContent = ''; }
+  const st = p.state === 'ok' ? p.steps : [];
+  $('#liveSteps').innerHTML = st.map(s => `<li>${esc(s)}</li>`).join('');
+  $('#stepsHint').style.display = st.length ? 'none' : '';
+}
+$('#tiles').addEventListener('click', e => { const b = e.target.closest('.tile'); if (!b || !S) return; const i = +b.dataset.i; addToken({ k: 'num', i, v: S.cur.pz.digits[i] }, b); });
+$('#keys').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b || !S) return;
+  if (b.dataset.op) addToken({ k: 'op', o: b.dataset.op }, b);
+  else if (b.dataset.paren) addToken({ k: b.dataset.paren }, b);
+});
+function undo() { if (!active() || !S.cur.tokens.length) return; S.cur.tokens.pop(); sfx.op(); hideFeedback(); renderBuilder(); }
+function clearEq() { if (!active()) return; S.cur.tokens = []; hideFeedback(); renderBuilder(); }
+$('#undoBtn').onclick = undo; $('#clearBtn').onclick = clearEq;
+function hideFeedback() { $('#feedback').className = 'feedback'; }
+function feedback(good, html) { const f = $('#feedback'); f.className = 'feedback on ' + (good ? 'good' : 'bad'); f.innerHTML = html; }
+
+/* ---------- checking ---------- */
+function checkAnswer() {
+  if (!active()) return;
+  const c = S.cur, r = QM.check(c.tokens, c.pz, rules());
+  c.explain = $('#myExplain').value.trim();
+  if (r.ok) {
+    c.status = 'solved'; c.answer = r.expr; c.usedPow = r.usedPow;
+    const sc = QM.scoreFor({ level: S.level, diff: S.diff, timeSec: c.t, wrong: c.wrong, hint: c.hint });
+    c.score = sc.score; c.stars = sc.stars; S.score += sc.score;
+    S.streak++; S.bestStreak = Math.max(S.bestStreak, S.streak);
+    $('#hScore').textContent = S.score.toLocaleString() + ' คะแนน';
+    feedback(true, `ยอดเยี่ยม! คุณคิดถูกต้องแล้ว <span class="stars">${'★'.repeat(sc.stars)}${'☆'.repeat(3 - sc.stars)}</span><br><span class="small">${esc(r.expr)} = ${c.pz.target} · +${sc.score} คะแนน (โบนัสความเร็ว +${sc.speed})</span>`);
+    sfx.good(); burst($('#targetNum'), sc.score);
+    if (S.mode === 'comp') setTimeout(() => { if (S && !S.over && S.cur === c) newProblem(); }, 1300);
+    else { $('#solBox').innerHTML = solutionsHtml(c.pz, 'วิธีคิดอื่นที่ทำได้'); }
+  } else {
+    c.wrong++; S.streak = 0;
+    feedback(false, 'ลองอีกครั้งนะ คุณทำได้!<br><span class="small">' + esc(r.msg) + '</span>');
+    sfx.bad(); shake($('#eq'));
+  }
+  syncControls();
+}
+$('#checkBtn').onclick = checkAnswer;
+function solutionsHtml(pz, title) {
+  return `<h3 style="margin-top:16px">${title}</h3>` + pz.solutions.map((s, k) =>
+    `<div class="sol"><div class="ex">วิธีที่ ${k + 1}: ${esc(s.expr)} = ${pz.target}</div><ol class="steps">${s.steps.map(x => `<li>${esc(x)}</li>`).join('')}</ol><p>${esc(s.explain)}</p></div>`).join('');
+}
+
+/* ---------- practice controls ---------- */
+$('#nextBtn').onclick = () => { if (!S || S.over) return; if (S.cur.status === 'open') { S.cur.status = 'skipped'; S.streak = 0; } if (S.paused) resumeGame(); newProblem(); };
+$('#hintBtn').onclick = () => {
+  if (!active()) return; const c = S.cur, s = c.pz.solutions[0];
+  c.hint = true;
+  feedback(true, 'คำใบ้: ลองเริ่มจาก <b>' + esc(s.steps[0]) + '</b>' + (s.steps.length > 2 ? ' แล้วคิดต่อจากผลลัพธ์นี้' : ''));
+};
+$('#revealBtn').onclick = () => {
+  if (!S || S.mode !== 'practice' || S.cur.status !== 'open') return;
+  S.cur.status = 'revealed'; S.streak = 0;
+  $('#solBox').innerHTML = solutionsHtml(S.cur.pz, 'เฉลย');
+  $('#solBox').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  syncControls();
+};
+$('#pPause').onclick = () => { if (!S) return; S.paused ? resumeGame() : pauseGame(); };
+$('#endBtn').onclick = () => endSession('end');
+
+/* ---------- competition controls ---------- */
+$('#tStart').onclick = () => { if (!S || S.mode !== 'comp' || S.running || S.over) return; S.running = true; S.ready = false; veil(''); startTimer(); sfx.good(); syncControls(); };
+$('#tPause').onclick = () => pauseGame();
+$('#tResume').onclick = () => resumeGame();
+$('#tStop').onclick = () => { if (S && S.running && !S.over) endSession('stop'); };
+$('#tRestart').onclick = () => { if (S) startSession({ mode: S.mode, level: S.level, diff: S.diff, time: S.time, custom: null }); };
+$('#skipBtn').onclick = () => { if (!active()) return; S.cur.status = 'skipped'; S.streak = 0; newProblem(); };
+function pauseGame(silent) {
+  if (!S || !S.running || S.paused || S.over) return;
+  S.paused = true; stopTimer();
+  veil(S.mode === 'comp' ? 'หยุดเวลาชั่วคราว — กด RESUME เพื่อเล่นต่อ' : 'พักเวลา — กด “เล่นต่อ” เพื่อกลับมาเล่น');
+  if (!silent) toast('หยุดเวลาแล้ว');
+  syncControls();
+}
+function resumeGame() { if (!S || !S.paused || S.over) return; S.paused = false; veil(''); startTimer(); syncControls(); }
+function syncControls() {
+  if (!S) return;
+  const comp = S.mode === 'comp', open = S.cur && S.cur.status === 'open';
+  $('#tStart').disabled = !comp || S.running || S.over;
+  $('#tPause').disabled = !S.running || S.paused || S.over;
+  $('#tResume').disabled = !S.paused || S.over;
+  $('#tStop').disabled = !S.running || S.over;
+  $('#skipBtn').disabled = !active();
+  $('#hintBtn').disabled = !active() || S.cur.hint;
+  $('#revealBtn').disabled = !open || S.over;
+  $('#pPause').textContent = S.paused ? 'เล่นต่อ' : 'พักเวลา';
+  $('#nextBtn').textContent = open ? 'ข้ามไปข้อต่อไป' : 'ข้อต่อไป';
+  $('#checkBtn').disabled = !active();
+}
+
+/* ---------- timer ---------- */
+function startTimer() { stopTimer(); lastTick = performance.now(); timerId = setInterval(tick, 200); }
+function stopTimer() { if (timerId) clearInterval(timerId); timerId = null; }
+function tick() {
+  const now = performance.now(), dt = (now - lastTick) / 1000; lastTick = now;
+  if (!S || !S.running || S.paused || S.over) return;
+  if (S.cur && S.cur.status === 'open') S.cur.t += dt;
+  if (S.mode === 'comp') {
+    const before = Math.ceil(S.remaining);
+    S.remaining -= dt;
+    if (Math.ceil(S.remaining) !== before && S.remaining <= 5 && S.remaining > 0) sfx.tick();
+    if (S.remaining <= 0) { S.remaining = 0; renderClock(); timeUp(); return; }
+  }
+  renderClock();
+}
+function renderClock() {
+  const c = $('#clock');
+  if (S.mode === 'comp') { c.textContent = mmss(S.remaining); c.classList.toggle('warn', S.remaining <= 10 && S.running); }
+  else { c.textContent = mmss(Math.floor(S.cur ? S.cur.t : 0)); c.classList.remove('warn'); }
+}
+function timeUp() {
+  S.over = true; stopTimer(); sfx.end();
+  veil('หมดเวลา!'); toast('หมดเวลา! กำลังสรุปผล'); syncControls();
+  setTimeout(() => endSession('timeout'), 900);
+}
+
+/* ---------- summary, stats, medals ---------- */
+const MEDALS = [
+  { id: 'first', name: 'ก้าวแรก', desc: 'ตอบถูกข้อแรก' },
+  { id: 'ten', name: 'นักคิด 10 ข้อ', desc: 'ตอบถูกสะสม 10 ข้อ' },
+  { id: 'fifty', name: 'เซียนตัวเลข', desc: 'ตอบถูกสะสม 50 ข้อ' },
+  { id: 'streak5', name: 'ไฟลุก 5 ข้อ', desc: 'ตอบถูกติดกัน 5 ข้อ' },
+  { id: 'speed', name: 'สายฟ้า', desc: 'ตอบถูกภายใน 10 วินาที' },
+  { id: 'power', name: 'จ้าวยกกำลัง', desc: 'ตอบถูกโดยใช้เลขยกกำลัง' },
+  { id: 'level2', name: 'ด่าน 3 หลัก', desc: 'ตอบถูกในระดับที่ 2' },
+  { id: 'expert', name: 'ผู้เชี่ยวชาญ', desc: 'ตอบถูกในระดับ EXPERT' },
+  { id: 'comp1000', name: 'แชมป์สนามแข่ง', desc: 'ได้ 1,000 คะแนนในการแข่งขันครั้งเดียว' },
+  { id: 'perfect', name: 'ไร้ที่ติ', desc: 'แข่งขันตอบถูก 5 ข้อขึ้นไปโดยไม่ผิดเลย' }
+];
+function award(id) { if (!stats.medals[id]) { stats.medals[id] = new Date().toISOString(); S.newMedals.push(id); } }
+function endSession(reason) {
+  if (!S || (S.done)) return;
+  S.over = true; S.done = true; stopTimer();
+  // problems never attempted in a competition at time-up don't count unless touched
+  const list = S.problems.filter(p => p.status !== 'open' || p.tokens.length || p.wrong || p.t > 3);
+  list.forEach(p => { if (p.status === 'open') p.status = 'unsolved'; });
+  const solved = list.filter(p => p.status === 'solved');
+  const wrong = list.reduce((a, p) => a + p.wrong, 0);
+  const tsum = solved.reduce((a, p) => a + p.t, 0);
+  const sess = { date: new Date().toISOString(), mode: S.mode, level: S.level, diff: S.diff, problems: list.length, correct: solved.length, wrong, score: S.score, avg: solved.length ? tsum / solved.length : 0 };
+  stats.problems += list.length; stats.correct += solved.length; stats.wrong += wrong; stats.score += S.score; stats.timeSum += tsum;
+  stats.stars += solved.reduce((a, p) => a + p.stars, 0);
+  const bd = stats.byDiff[S.diff] = stats.byDiff[S.diff] || { problems: 0, correct: 0, wrong: 0, timeSum: 0, score: 0 };
+  bd.problems += list.length; bd.correct += solved.length; bd.wrong += wrong; bd.timeSum += tsum; bd.score += S.score;
+  const bl = stats.byLevel[S.level] = stats.byLevel[S.level] || { problems: 0, correct: 0 };
+  bl.problems += list.length; bl.correct += solved.length;
+  if (list.length) stats.sessions.unshift(sess); stats.sessions = stats.sessions.slice(0, 100);
+  if (solved.length) award('first');
+  if (stats.correct >= 10) award('ten'); if (stats.correct >= 50) award('fifty');
+  if (S.bestStreak >= 5) award('streak5');
+  if (solved.some(p => p.t <= 10)) award('speed');
+  if (solved.some(p => p.usedPow)) award('power');
+  if (solved.length && S.level === 2) award('level2');
+  if (solved.length && S.diff === 'EXPERT') award('expert');
+  if (S.mode === 'comp' && S.score >= 1000) award('comp1000');
+  if (S.mode === 'comp' && solved.length >= 5 && wrong === 0) award('perfect');
+  store.set('pqm.stats', stats);
+  renderSummary(list, sess, reason);
+  show('summary');
+}
+function renderSummary(list, sess, reason) {
+  $('#sumTitle').textContent = (S.mode === 'comp' ? (reason === 'timeout' ? 'หมดเวลา! ' : 'จบการแข่งขัน ') : 'จบการฝึกซ้อม ') + '· ' + QM.LEVELS[S.level].th + ' · ' + S.diff;
+  const acc = sess.problems ? Math.round(sess.correct / sess.problems * 100) : 0;
+  $('#sumStats').innerHTML = [[sess.problems, 'จำนวนโจทย์'], [sess.correct, 'ตอบถูก'], [sess.wrong, 'ตอบผิด (ครั้ง)'], [sess.score.toLocaleString(), 'คะแนนรวม'], [sess.correct ? sess.avg.toFixed(1) + ' วิ' : '–', 'เวลาเฉลี่ยต่อข้อ'], [acc + '%', 'ความถูกต้อง'], [S.bestStreak, 'ถูกติดกันสูงสุด'], [list.reduce((a, p) => a + p.stars, 0), 'ดาวที่ได้']]
+    .map(([b, s]) => `<div class="stat"><b>${b}</b><span>${s}</span></div>`).join('');
+  $('#sumMedals').innerHTML = S.newMedals.length ? '<div class="card"><h3 style="margin-bottom:10px">เหรียญใหม่!</h3><div class="medals">' + S.newMedals.map(id => medalHtml(MEDALS.find(m => m.id === id), true)).join('') + '</div></div>' : '';
+  const tag = p => p.status === 'solved' ? '<span class="tag ok">ถูก</span>' : p.status === 'revealed' ? '<span class="tag sk">ดูเฉลย</span>' : p.status === 'skipped' ? '<span class="tag sk">ข้าม</span>' : '<span class="tag no">ยังไม่ได้ตอบ</span>';
+  $('#sumList').innerHTML = list.length ? list.map((p, i) => `<details class="pb"${i === 0 ? ' open' : ''}><summary>ข้อ ${i + 1} ${tag(p)} <span>ตัวเลข ${p.pz.digits.join(', ')} → เป้าหมาย <b>${p.pz.target}</b></span>${p.status === 'solved' ? `<span class="stars">${'★'.repeat(p.stars)}</span><span class="muted small">${p.t.toFixed(1)} วิ · +${p.score}</span>` : ''}</summary>
+    ${p.answer ? `<p><b>คำตอบของฉัน:</b> ${esc(p.answer)} = ${p.pz.target}</p>` : ''}${p.wrong ? `<p class="muted small">ตอบผิด ${p.wrong} ครั้ง</p>` : ''}
+    ${p.explain ? `<p><b>วิธีคิดของฉัน:</b> ${esc(p.explain)}</p>` : ''}
+    ${solutionsHtml(p.pz, p.pz.solutions.length > 1 ? 'เฉลย (' + p.pz.solutions.length + ' วิธี)' : 'เฉลย')}</details>`).join('')
+    : '<p class="muted">ไม่มีโจทย์ที่ได้ลองทำในรอบนี้</p>';
+}
+$('#againBtn').onclick = () => { if (S) startSession({ mode: S.mode, level: S.level, diff: S.diff, time: S.time, custom: null }); };
+function medalHtml(m, got) { return `<div class="medal${got ? ' got' : ''}"><svg><use href="#i-medal"/></svg><b>${m.name}</b><span>${m.desc}</span></div>`; }
+function renderStats() {
+  const acc = stats.problems ? Math.round(stats.correct / stats.problems * 100) : 0;
+  $('#stTotals').innerHTML = [[stats.problems, 'จำนวนโจทย์ทั้งหมด'], [stats.correct, 'ตอบถูก'], [stats.wrong, 'ตอบผิด (ครั้ง)'], [stats.score.toLocaleString(), 'คะแนนรวม'], [stats.correct ? (stats.timeSum / stats.correct).toFixed(1) + ' วิ' : '–', 'เวลาเฉลี่ยต่อข้อ'], [acc + '%', 'ความถูกต้อง'], [stats.stars, 'ดาวสะสม'], [stats.sessions.length, 'จำนวนรอบที่เล่น']]
+    .map(([b, s]) => `<div class="stat"><b>${b}</b><span>${s}</span></div>`).join('');
+  $('#stDiff').innerHTML = '<tr><th>ความยาก</th><th class="n">โจทย์</th><th class="n">ถูก</th><th class="n">ผิด (ครั้ง)</th><th class="n">ความถูกต้อง</th><th class="n">เวลาเฉลี่ย</th></tr>' +
+    ['EASY', 'NORMAL', 'HARD', 'EXPERT'].map(d => { const b = stats.byDiff[d] || { problems: 0, correct: 0, wrong: 0, timeSum: 0 };
+      return `<tr><td>${d}</td><td class="n">${b.problems}</td><td class="n">${b.correct}</td><td class="n">${b.wrong}</td><td class="n">${b.problems ? Math.round(b.correct / b.problems * 100) + '%' : '–'}</td><td class="n">${b.correct ? (b.timeSum / b.correct).toFixed(1) + ' วิ' : '–'}</td></tr>`; }).join('');
+  $('#stMedals').innerHTML = MEDALS.map(m => medalHtml(m, !!stats.medals[m.id])).join('');
+  const fmtD = s => { try { return new Date(s).toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'short' }); } catch (e) { return s; } };
+  $('#stHist').innerHTML = stats.sessions.length ? '<tr><th>วันที่</th><th>โหมด</th><th>ระดับ</th><th class="n">ถูก/ทั้งหมด</th><th class="n">ผิด</th><th class="n">คะแนน</th></tr>' + stats.sessions.slice(0, 30).map(s =>
+    `<tr><td>${esc(fmtD(s.date))}</td><td>${s.mode === 'comp' ? 'แข่งขัน' : 'ฝึกซ้อม'}</td><td>${s.level} · ${esc(s.diff)}</td><td class="n">${s.correct}/${s.problems}</td><td class="n">${s.wrong}</td><td class="n">${Number(s.score).toLocaleString()}</td></tr>`).join('')
+    : '<tr><td class="muted">ยังไม่มีประวัติการเล่น เริ่มเล่นรอบแรกได้เลย!</td></tr>';
+}
+let resetArm = 0;
+$('#resetStats').onclick = () => {
+  const b = $('#resetStats');
+  if (Date.now() - resetArm > 4000) { resetArm = Date.now(); b.textContent = 'กดอีกครั้งเพื่อยืนยันการล้าง'; setTimeout(() => b.textContent = 'ล้างสถิติทั้งหมด', 4000); return; }
+  stats = blankStats(); store.set('pqm.stats', stats); b.textContent = 'ล้างสถิติทั้งหมด'; renderStats(); toast('ล้างสถิติแล้ว');
+};
+
+/* ---------- settings ---------- */
+function renderSettings() {
+  $('#sSound').checked = settings.sound; $('#sZero').checked = settings.allowZero; $('#sFrac').checked = settings.allowFrac; $('#sNeg').checked = settings.allowNeg;
+  $('#sExp').value = String(settings.maxExp); $('#sLevel').value = String(settings.level); $('#sDiff').value = settings.diff; seg('sRule', settings.numberRule);
+}
+const bindS = (id, k, f) => $('#' + id).addEventListener('change', e => { settings[k] = f(e.target); saveSettings(); renderMute(); toast('บันทึกแล้ว'); });
+bindS('sSound', 'sound', t => t.checked); bindS('sZero', 'allowZero', t => t.checked); bindS('sFrac', 'allowFrac', t => t.checked); bindS('sNeg', 'allowNeg', t => t.checked);
+bindS('sExp', 'maxExp', t => +t.value); bindS('sLevel', 'level', t => +t.value); bindS('sDiff', 'diff', t => t.value);
+$('#sRule').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; settings.numberRule = b.dataset.v; saveSettings(); seg('sRule', settings.numberRule); toast('บันทึกแล้ว — มีผลกับโจทย์ข้อถัดไป'); });
+$('#sReset').onclick = () => { settings = { ...DEF }; saveSettings(); renderSettings(); renderMute(); toast('คืนค่าเริ่มต้นแล้ว'); };
+
+/* ---------- keyboard ---------- */
+document.addEventListener('keydown', e => {
+  if (!$('#v-play').classList.contains('on') || !S || $('#setup').classList.contains('on')) return;
+  if (e.target.matches('textarea,input,select')) return;
+  const k = e.key;
+  if (/^[0-9]$/.test(k)) {
+    const d = +k, pz = S.cur.pz;
+    const usedI = new Set(S.cur.tokens.filter(t => t.k === 'num').map(t => t.i));
+    let i = pz.digits.findIndex((x, j) => x === d && (settings.numberRule === 'reuse-all' || !usedI.has(j)));
+    if (i < 0 && pz.digits.includes(d)) i = pz.digits.indexOf(d);
+    if (i < 0) { toast('ไม่มีเลข ' + d + ' ในโจทย์'); return; }
+    addToken({ k: 'num', i, v: d }, $$('#tiles .tile')[i]); e.preventDefault();
+  } else if ('+-*/xX^÷×'.includes(k)) {
+    const o = { '*': '×', x: '×', X: '×', '/': '÷' }[k] || k;
+    if (!QM.DIFF[S.diff].ops.includes(o)) { toast('ระดับนี้ไม่มีเลขยกกำลัง'); return; }
+    addToken({ k: 'op', o }); e.preventDefault();
+  } else if (k === '(' || k === ')') { addToken({ k }); e.preventDefault(); }
+  else if (k === 'Backspace') { undo(); e.preventDefault(); }
+  else if (k === 'Escape') clearEq();
+  else if (k === 'Enter') { checkAnswer(); e.preventDefault(); }
+});
+
+renderMute(); renderHome();
+}
+</script>
+</body>
+</html>
