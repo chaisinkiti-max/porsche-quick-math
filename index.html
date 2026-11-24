@@ -104,7 +104,9 @@ button:disabled{opacity:.4;cursor:not-allowed}
 .keys{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-top:14px}
 .keys button{min-height:58px;font-size:26px}
 .keys .wide2{grid-column:span 2;font-size:18px}
-.keys .check{grid-column:span 5;font-size:22px;min-height:62px}
+.keys .check{grid-column:span 3;font-size:22px;min-height:62px}
+.keys .next{grid-column:span 2;font-size:18px;min-height:62px}
+.keys .next.go{background:var(--green);box-shadow:0 4px 0 #1d8a40;animation:pop .6s ease 2}
 .panel{margin-top:16px}
 .panel h3{font-size:18px;margin-bottom:8px}
 ol.steps{margin:0;padding-left:0;list-style:none;display:grid;gap:6px;counter-reset:s}
@@ -242,6 +244,8 @@ section h2{font-size:clamp(26px,3.4vw,36px);margin-bottom:14px}
       <button class="btn nav" data-op="+">+</button><button class="btn nav" data-op="-">−</button><button class="btn nav" data-op="×">×</button><button class="btn nav" data-op="÷">÷</button><button class="btn nav" data-op="^" id="powKey">^</button>
       <button class="btn sky" data-paren="(">(</button><button class="btn sky" data-paren=")">)</button><button class="btn yel" id="undoBtn" aria-label="ย้อนกลับ">⌫</button><button class="btn wide2 red" id="clearBtn">ล้างทั้งหมด</button>
       <button class="btn pri check" id="checkBtn">ตรวจคำตอบ</button>
+      <button class="btn org next" id="nextBtn">ข้อต่อไป</button>
+      <button class="btn org next" id="skipBtn">ข้ามข้อนี้</button>
      </div>
      <div class="feedback" id="feedback"></div>
     </div>
@@ -264,10 +268,8 @@ section h2{font-size:clamp(26px,3.4vw,36px);margin-bottom:14px}
      <button class="btn sky" id="tResume">RESUME</button>
      <button class="btn red" id="tStop">STOP</button>
      <button class="btn org" id="tRestart">RESTART</button>
-     <button class="btn full" id="skipBtn">ข้ามข้อนี้</button>
     </div>
     <div class="ctrl" id="ctrlPrac">
-     <button class="btn pri full" id="nextBtn">ข้อต่อไป</button>
      <button class="btn yel" id="hintBtn">คำใบ้</button>
      <button class="btn sky" id="revealBtn">ดูเฉลย</button>
      <button class="btn" id="pPause">พักเวลา</button>
@@ -940,6 +942,8 @@ function startSession(cfg) {
   S = { ...cfg, problems: [], cur: null, score: 0, remaining: cfg.time, running: false, paused: false, over: false, ready: cfg.mode === 'comp', streak: 0, bestStreak: 0, newMedals: [] };
   $('#ctrlComp').style.display = S.mode === 'comp' ? '' : 'none';
   $('#ctrlPrac').style.display = S.mode === 'practice' ? '' : 'none';
+  $('#nextBtn').style.display = S.mode === 'practice' ? '' : 'none';
+  $('#skipBtn').style.display = S.mode === 'comp' ? '' : 'none';
   $('#hLevel').textContent = QM.LEVELS[S.level].th;
   $('#hCount').textContent = 'ใช้ตัวเลข ' + QM.LEVELS[S.level].count + ' ตัว';
   $('#hDiff').textContent = S.diff;
@@ -1093,7 +1097,8 @@ function syncControls() {
   $('#hintBtn').disabled = !active() || S.cur.hint;
   $('#revealBtn').disabled = !open || S.over;
   $('#pPause').textContent = S.paused ? 'เล่นต่อ' : 'พักเวลา';
-  $('#nextBtn').textContent = open ? 'ข้ามไปข้อต่อไป' : 'ข้อต่อไป';
+  $('#nextBtn').textContent = open ? 'ข้ามข้อนี้' : 'ข้อต่อไป →';
+  $('#nextBtn').classList.toggle('go', !open && !S.over);
   $('#checkBtn').disabled = !active();
 }
 
@@ -1216,7 +1221,7 @@ $('#sReset').onclick = () => { settings = { ...DEF }; saveSettings(); renderSett
 /* ---------- keyboard ---------- */
 document.addEventListener('keydown', e => {
   if (!$('#v-play').classList.contains('on') || !S || $('#setup').classList.contains('on')) return;
-  if (e.target.matches('textarea,input,select')) return;
+  if (e.target.matches && e.target.matches('textarea,input,select')) return;
   const k = e.key;
   if (/^[0-9]$/.test(k)) {
     const d = +k, pz = S.cur.pz;
@@ -1232,7 +1237,7 @@ document.addEventListener('keydown', e => {
   } else if (k === '(' || k === ')') { addToken({ k }); e.preventDefault(); }
   else if (k === 'Backspace') { undo(); e.preventDefault(); }
   else if (k === 'Escape') clearEq();
-  else if (k === 'Enter') { checkAnswer(); e.preventDefault(); }
+  else if (k === 'Enter') { if (S.mode === 'practice' && S.cur.status !== 'open' && !S.over) $('#nextBtn').click(); else checkAnswer(); e.preventDefault(); }
 });
 
 renderMute(); renderHome();
